@@ -92,16 +92,28 @@
                         <button type="submit" class="btn-primary" style="margin-top: 10px;">Upload</button>
                     </form>
 
-                    <!-- Change Password -->
-                    <form id="changePasswordForm" class="account-form">
-                        <label for="oldPassword">Current password</label>
-                        <input type="password" id="oldPassword" placeholder="Enter current password">
+                    <!-- PASSWORD AREA: we switch between these two forms in script.js -->
+                    <div id="passwordArea">
 
-                        <label for="newPassword">New password</label>
-                        <input type="password" id="newPassword" placeholder="Enter new password">
+                        <!-- For Google-only users: set first password -->
+                        <form id="setPasswordForm" class="account-form" style="display:none;">
+                            <label>Create a password</label>
+                            <input type="password" id="setPassword" placeholder="Enter new password">
+                            <button type="submit" class="btn-primary" style="margin-top: 10px;">Set Password</button>
+                        </form>
 
-                        <button type="submit" class="btn-secondary" style="margin-top: 10px;">Change Password</button>
-                    </form>
+                        <!-- For local accounts: change password -->
+                        <form id="changePasswordForm" class="account-form" style="display:none;">
+                            <label for="oldPassword">Current password</label>
+                            <input type="password" id="oldPassword" placeholder="Enter current password">
+
+                            <label for="newPassword">New password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password">
+
+                            <button type="submit" class="btn-secondary" style="margin-top: 10px;">Change Password</button>
+                        </form>
+
+                    </div>
 
                 </div>
             </div>
