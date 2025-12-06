@@ -1,8 +1,8 @@
 // middleware/auth.js
 
 function requireAuth(req, res, next) {
-  // Passport handles sessions. If authenticated, req.user exists.
-  if (req.isAuthenticated && req.isAuthenticated()) {
+  // We only trust our own session data
+  if (req.session && req.session.user) {
     return next();
   }
 
