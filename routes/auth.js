@@ -8,32 +8,35 @@ const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
-// ---------- Multer setup for profile pictures ----------
+/* ---------------------------
+   MULTER FOR PROFILE UPLOAD
+---------------------------- */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "..", "uploads"));
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const userId = req.session.user?.id || "guest";
-    cb(null, `${userId}-${Date.now()}${ext}`);
+    cb(null, `${req.user.id}-${Date.now()}${ext}`);
   }
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed"));
+      return cb(new Error("Only image files allowed"));
     }
     cb(null, true);
   }
 });
 
-// Helper: put user info into session payload
-function setSessionUser(req, user) {
-  req.session.user = {
+/* ---------------------------
+      HELPER: SESSION USER
+---------------------------- */
+function sessionPayload(user) {
+  return {
     id: user._id,
     username: user.username,
     email: user.email,
@@ -41,156 +44,116 @@ function setSessionUser(req, user) {
   };
 }
 
-// ---------- REGISTER ----------
+/* ---------------------------
+        REGISTER USER
+---------------------------- */
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+    if (!username || !email || !password)
+      return res.status(400).json({ message: "All fields required" });
 
-    const existingUser = await User.findOne({
-      $or: [{ username }, { email }]
-    });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
-    }
+    const exists = await User.findOne({ $or: [{ username }, { email }] });
+    if (exists)
+      return res.status(400).json({ message: "Username or email exists" });
 
     const user = new User({ username, email, password });
     await user.save();
 
-    return res.json({ message: "User registered successfully" });
+    res.json({ message: "Registration successful" });
   } catch (err) {
-    console.error("Register error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// ---------- LOGIN (LOCAL) ----------
-router.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Incorrect password" });
-    }
-
-    setSessionUser(req, user);
-    return res.json({ message: "Login successful" });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: err.message });
-  }
+/* ---------------------------
+          LOGIN (LOCAL)
+---------------------------- */
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  res.json({ message: "Login successful", user: sessionPayload(req.user) });
 });
 
-// ---------- LOGOUT ----------
+/* ---------------------------
+            LOGOUT
+---------------------------- */
 router.get("/logout", (req, res) => {
-  req.logout?.(() => {});
-  req.session.destroy(() => {
-    res.json({ message: "Logged out" });
+  req.logout(() => {
+    req.session.destroy(() => {
+      res.json({ message: "Logged out" });
+    });
   });
 });
 
-// ---------- LOGIN STATUS ----------
+/* ---------------------------
+       LOGIN STATUS
+---------------------------- */
 router.get("/status", (req, res) => {
-  let userPayload = null;
-
-  if (req.session && req.session.user) {
-    userPayload = req.session.user;
-  } else if (req.user) {
-    userPayload = {
-      id: req.user._id,
-      username: req.user.username,
-      email: req.user.email,
-      profilePic: req.user.profilePic || ""
-    };
+  if (req.isAuthenticated()) {
+    return res.json({ loggedIn: true, user: sessionPayload(req.user) });
   }
-
-  if (userPayload) {
-    return res.json({ loggedIn: true, user: userPayload });
-  }
-
-  return res.json({ loggedIn: false });
+  res.json({ loggedIn: false });
 });
 
-// ---------- CHANGE PASSWORD ----------
+/* ---------------------------
+      CHANGE PASSWORD
+---------------------------- */
 router.post("/change-password", requireAuth, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    if (!oldPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Old and new passwords are required" });
-    }
 
-    const user = await User.findById(req.session.user.id);
-    if (!user || !user.password) {
+    if (!oldPassword || !newPassword)
+      return res.status(400).json({ message: "Missing fields" });
+
+    const user = await User.findById(req.user.id);
+
+    if (!user.password)
       return res.status(400).json({
-        message:
-          "Password change is only available for accounts with a local password"
+        message: "Password change unavailable for OAuth-only accounts"
       });
-    }
 
     const match = await user.comparePassword(oldPassword);
-    if (!match) {
+    if (!match)
       return res.status(400).json({ message: "Old password is incorrect" });
-    }
 
-    user.password = newPassword; // will be hashed by pre-save
+    user.password = newPassword;
     await user.save();
 
-    res.json({ message: "Password updated successfully" });
+    res.json({ message: "Password updated" });
   } catch (err) {
-    console.error("Change password error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// ---------- PROFILE PICTURE UPLOAD ----------
+/* ---------------------------
+  PROFILE PICTURE UPLOAD
+---------------------------- */
 router.post(
   "/profile-picture",
   requireAuth,
   upload.single("profilePic"),
   async (req, res) => {
     try {
-      if (!req.file) {
+      if (!req.file)
         return res.status(400).json({ message: "No file uploaded" });
-      }
 
-      const user = await User.findById(req.session.user.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const relativePath = `/uploads/${req.file.filename}`;
-      user.profilePic = relativePath;
+      const user = await User.findById(req.user.id);
+      user.profilePic = `/uploads/${req.file.filename}`;
       await user.save();
 
-      setSessionUser(req, user);
-
       res.json({
-        message: "Profile picture updated successfully",
-        profilePicUrl: relativePath
+        message: "Profile updated",
+        profilePicUrl: user.profilePic
       });
     } catch (err) {
-      console.error("Profile picture error:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 );
 
-// ---------- THIRD–PARTY AUTH (3 PROVIDERS) ----------
-
-// GOOGLE
+/* ---------------------------
+       GOOGLE OAUTH
+---------------------------- */
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -198,28 +161,8 @@ router.get(
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login.html"
-  }),
+  passport.authenticate("google", { failureRedirect: "/login.html" }),
   (req, res) => {
-    setSessionUser(req, req.user);
-    res.redirect("/index.html");
-  }
-);
-
-// GITHUB
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
-);
-
-router.get(
-  "/github/callback",
-  passport.authenticate("github", {
-    failureRedirect: "/login.html"
-  }),
-  (req, res) => {
-    setSessionUser(req, req.user);
     res.redirect("/index.html");
   }
 );
