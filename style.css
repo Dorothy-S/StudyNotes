@@ -1,0 +1,451 @@
+/*home page*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*page background*/
+body { 
+  background-color: #1c1c1f;
+  color: #c1c1c4;
+  font-family: 'Montserrat', Arial, sans-serif;
+  background-image: /*grid pattern*/
+    linear-gradient(#2a2a2e 1px, transparent 1px),
+    linear-gradient(90deg, #2a2a2e 1px, transparent 1px);
+  background-size: 40px 40px;
+  line-height: 1.6;
+}
+
+ /*header*/
+header {
+  background: rgba(28,28,32,0.9);
+  padding: 12px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+}
+
+ /*StudyNotes title in header*/
+header .logo {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 40px;
+}
+
+/*StudyNotes title font and colour*/
+header .logo h1 {
+  color: #e2e2e5;
+  font-size: 1.8rem;
+}
+
+/*StudyNotes title colour*/
+header .logo span {
+  color: #3bb89e;
+}
+
+/* navigation bar position*/
+nav { 
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/*navigation bar section position */
+nav ul li {  
+  display: inline-block;
+  margin: 0 12px;
+}
+
+/*navigation bar section words */
+nav ul li a { 
+  text-decoration: none;
+  font-weight: 500;
+  color: #b5b5b8;
+  position: relative;
+  transition: 0.3s ease;
+}
+
+/* hover over the section word effect */
+nav ul li a::after { 
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: #3bb89e;
+  transition: width 0.3s;
+}
+
+/* underline appears on hover or when active */
+nav ul li a:hover::after,
+nav ul li a.active::after {
+  width: 100%;
+}
+
+/* hover text color */
+nav ul li a:hover,
+nav ul li a.active {
+  color: #3bb89e;
+}
+
+/* dashboard Section */
+.dashboard-section {
+  padding: 60px 8%;
+  max-width: 1100px;
+  margin: auto;
+  text-align: center;
+}
+
+/* structures dashboard text section */
+.dashboard-text {
+  display: inline-block;
+  width: 60%;
+  vertical-align: middle;
+  text-align: left;
+}
+
+ /* dashboard image sizing */
+.dashboard-image {
+  display: inline-block;
+  width: 30%;
+  vertical-align: middle;
+  margin-left: 20px;
+}
+
+/* main header */
+.dashboard-text h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #e2e2e5;
+}
+
+ /*sub header */
+.dashboard-text h2 {
+  font-size: 1.4rem;
+  color: #3bb89e;
+  margin-bottom: 18px;
+}
+
+/* paragraph */
+.dashboard-text p {
+  color: #a5a5a8;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+/*dashboard image size and shape*/
+.dashboard-image img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+
+/*create new notes button*/
+.dashboard-btn {
+  display: inline-block;
+  margin: 6px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  background: blueviolet;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/*create new notes button hover*/
+.dashboard-btn:hover {
+  opacity: 0.9;
+}
+
+/* Notes Dashboard Section */
+.notes-dashboard {
+  padding: 40px 8%;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/*border for notes section */
+.notes-section {
+  max-width: 100%;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(38,38,42,0.96);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+}
+
+/*notes section title */
+.notes-section h2 {
+  font-size: 1.8rem;
+  color: #eee;
+  margin-bottom: 20px;
+  border-left: 3px solid #3bb89e;
+  padding-left: 8px;
+}
+
+/* Table Styling */
+.notes-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/*table structure*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+/*table cells formating*/
+th, td {
+  padding: 15px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/*table header formating*/
+th {
+  background-color: rgba(59, 184, 158, 0.1);
+  color: #3bb89e;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/*table row hover effect*/
+tr:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* create notes box */
+.create-section, .edit-section {
+  padding: 40px 8%;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* note form card */
+.note-form {
+  background: rgba(40,40,46,0.95);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.3);
+  text-align: left;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/*note form title */
+.note-form h2 {
+  color: #3bb89e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/*margin in input sections */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/*create a note input structure */
+.note-form input,
+.note-form select,
+.note-form textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #121214;
+  color: #eee;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.note-form input:focus,
+.note-form select:focus,
+.note-form textarea:focus {
+  outline: none;
+  border-color: #3bb89e;
+  box-shadow: 0 0 0 2px rgba(59, 184, 158, 0.2);
+}
+
+/* Button Styles */
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+/*buttons formating*/
+.btn-primary, .btn-secondary {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  text-align: center;
+  flex: 1;
+}
+
+/*save note button*/
+.btn-primary {
+  background: #3bb89e;
+  color: white;
+}
+
+/*Cancel note button*/
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+/* Edit/Delete buttons in table */
+.btn-edit, .btn-delete {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+/* Edit button styling */
+.btn-edit {
+  background: rgba(59, 184, 158, 0.2);
+  color: #3bb89e;
+  border: 1px solid #3bb89e;
+}
+
+/* Edit button styling */
+.btn-edit:hover {
+  background: #3bb89e;
+  color: white;
+}
+
+/* Delete button styling */
+.btn-delete {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+/* Delete button styling */
+.btn-delete:hover {
+  background: #dc3545;
+  color: white;
+}
+
+/* Empty Message section*/
+.empty-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+/* Empty Message section text colour*/
+.empty-message a {
+  color: #3bb89e;
+  text-decoration: none;
+}
+
+/* Empty Message section text colour styling*/
+.empty-message a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  background: #121214;
+  text-align: center;
+  padding: 18px;
+  color: #777;
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  margin-top: 40px;
+}
+
+/* ----------------------------- */
+/* AUTH FORMS (LOGIN & REGISTER) */
+/* ----------------------------- */
+
+.form-container {
+    max-width: 420px;
+    margin: 70px auto;
+    padding: 30px;
+    background: rgba(38,38,42,0.96);
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    text-align: left;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3bb89e;
+}
+
+.form-container label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #b5b5b8;
+    font-size: 0.9rem;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #121214;
+    color: #eee;
+    margin-bottom: 18px;
+}
+
+.form-container input:focus {
+    outline: none;
+    border-color: #3bb89e;
+    box-shadow: 0 0 0 2px rgba(59, 184, 158, 0.25);
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    background: #3bb89e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: 0.3s ease;
+}
+
+.form-container button:hover {
+    background: #34a58a;
+}
+
+.form-container p {
+    text-align: center;
+    margin-top: 15px;
+    color: #9a9a9c;
+}
+
+.form-container a {
+    color: #3bb89e;
+    text-decoration: none;
+}
+
+.form-container a:hover {
+    text-decoration: underline;
+}
+

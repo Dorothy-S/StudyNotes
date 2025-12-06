@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login - StudyNotes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <h1>Study<span>Notes</span></h1>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <h2>Login</h2>
+
+    <label for="loginUsername">Username</label>
+    <input type="text" id="loginUsername" placeholder="Enter username">
+
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" placeholder="Enter password">
+
+    <button id="loginBtn">Login</button>
+
+    <!-- 3rd-party authentication buttons (BONUS) -->
+    <div style="margin-top: 20px; text-align: center;">
+      <p>Or continue with:</p>
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px;">
+        <a href="/api/auth/google" class="btn-secondary" style="padding: 8px 16px; text-decoration: none; border-radius: 6px;">
+          Google
+        </a>
+        <a href="/api/auth/github" class="btn-secondary" style="padding: 8px 16px; text-decoration: none; border-radius: 6px;">
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <p style="margin-top: 20px;">
+      Don’t have an account? <a href="register.html">Register</a>
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

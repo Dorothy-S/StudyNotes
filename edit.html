@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Note - StudyNotes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1>Study<span>Notes</span></h1>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="create.html">Create Note</a></li>
+
+                <!-- authentication links -->
+                <li><a id="loginLink" href="login.html">Login</a></li>
+                <li><a id="registerLink" href="register.html">Register</a></li>
+                <li><a id="logoutLink" href="#" style="display:none;">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main> <!--main input area-->
+        <section class="edit-section">
+            <h2>Edit Study Note</h2>
+
+            <form id="editNoteForm" class="note-form">
+
+                <input type="hidden" id="editNoteId">
+
+                <div class="form-group">
+                    <label for="editNoteTitle">Note Title:</label>
+                    <input type="text" id="editNoteTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editNoteCourse">Course/Subject:</label>
+                    <select id="editNoteCourse" required>
+                        <option value="">Select a course</option>
+                        <option value="INFR3120">INFR3120 - Web & Script Programming</option>
+                        <option value="INFR3110">INFR3110 - Database Management</option>
+                        <option value="INFR3130">INFR3130 - Software Engineering</option>
+                        <option value="MATH1010">MATH1010 - Calculus</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editNoteContent">Note Content:</label>
+                    <textarea id="editNoteContent" rows="10" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Update Note</button>
+                    <a href="index.html" class="btn-secondary">Cancel</a>
+                </div>
+
+            </form>
+        </section>
+    </main>
+<!--Footer-->
+    <footer>
+        <p>StudyNotes Team</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
