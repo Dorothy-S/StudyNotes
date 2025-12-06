@@ -124,7 +124,10 @@ router.get("/status", (req, res) => {
   }
 
   if (userPayload) {
-    return res.json({ loggedIn: true, user: userPayload });
+    userPayload.passwordExists = !!user.password;
+
+return res.json({ loggedIn: true, user: userPayload });
+
   }
 
   return res.json({ loggedIn: false });
