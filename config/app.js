@@ -6,59 +6,81 @@ const mongoose = require("mongoose");
 const DB = require("./db");
 const passport = require("./passport");
 
-// Connect to MongoDB
-mongoose.connect(DB.URI);
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => {
+// ----------------------------
+// CONNECT TO MONGODB
+// ----------------------------
+mongoose.connect(DB.URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+mongoose.connection.on("error", console.error.bind(console, "MongoDB error:"));
+mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
 const app = express();
 
-// CORS
+// ----------------------------
+// CORS (Render-safe)
+// ----------------------------
 app.use(
   cors({
     origin: true,
-    credentials: true
+    credentials: true,
   })
 );
 
-// Body parsers
+// ----------------------------
+// BODY PARSERS
+// ----------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session
+// ----------------------------
+// SESSION (REQUIRED FOR OAUTH)
+// ----------------------------
+app.set("trust proxy", 1); // Required for Render HTTPS proxy
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "studynotes-secret",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // set true if using HTTPS + proxy
+    cookie: {
+      secure: false, // Render handles HTTPS, MUST stay false unless using custom domain
+      httpOnly: true,
+      sameSite: "lax", // Allows Google OAuth redirect
+    },
   })
 );
 
-// Passport
+// ----------------------------
+// PASSPORT (OAUTH + LOCAL)
+// ----------------------------
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve static files (frontend)
+// ----------------------------
+// STATIC FRONTEND FILES
+// ----------------------------
 app.use(express.static(path.join(__dirname, "..")));
 
-// Serve uploaded avatars
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "..", "uploads"))
-);
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
-// Routes
+// ----------------------------
+// ROUTES
+// ----------------------------
 const authRoutes = require("../routes/auth");
 const notesRoutes = require("../routes/notes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 
-// Fallback to index.html for any unknown front-end route
+// ----------------------------
+// FALLBACK — SERVE FRONTEND
+// ----------------------------
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
