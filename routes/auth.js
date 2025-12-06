@@ -1,4 +1,3 @@
-// routes/auth.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const path = require("path");
@@ -39,17 +38,18 @@ const upload = multer({
   }
 });
 
-// Helper to store user session data
+// ---------- Helper: store user in session ----------
 function setSessionUser(req, user) {
   req.session.user = {
     id: user._id,
     username: user.username,
     email: user.email,
-    profilePic: user.profilePic || ""
+    profilePic: user.profilePic || "",
+    hasPassword: !!user.password
   };
 }
 
-// -------------------- REGISTER --------------------
+// ---------- REGISTER ----------
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -77,7 +77,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// -------------------- LOGIN (LOCAL) --------------------
+// ---------- LOGIN (LOCAL) ----------
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -100,7 +100,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// -------------------- LOGOUT --------------------
+// ---------- LOGOUT ----------
 router.get("/logout", (req, res) => {
   req.logout?.(() => {});
   req.session.destroy(() => {
@@ -108,7 +108,7 @@ router.get("/logout", (req, res) => {
   });
 });
 
-// -------------------- LOGIN STATUS --------------------
+// ---------- LOGIN STATUS ----------
 router.get("/status", (req, res) => {
   let userPayload = null;
 
@@ -119,21 +119,19 @@ router.get("/status", (req, res) => {
       id: req.user._id,
       username: req.user.username,
       email: req.user.email,
-      profilePic: req.user.profilePic || ""
+      profilePic: req.user.profilePic || "",
+      hasPassword: !!req.user.password
     };
   }
 
   if (userPayload) {
-    userPayload.passwordExists = !!user.password;
-
-return res.json({ loggedIn: true, user: userPayload });
-
+    return res.json({ loggedIn: true, user: userPayload });
   }
 
   return res.json({ loggedIn: false });
 });
 
-// -------------------- CHANGE PASSWORD --------------------
+// ---------- CHANGE PASSWORD (local accounts) ----------
 router.post("/change-password", requireAuth, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -159,6 +157,7 @@ router.post("/change-password", requireAuth, async (req, res) => {
     user.password = newPassword; // will be hashed by pre-save
     await user.save();
 
+    setSessionUser(req, user);
     res.json({ message: "Password updated successfully" });
   } catch (err) {
     console.error("Change password error:", err);
@@ -166,7 +165,33 @@ router.post("/change-password", requireAuth, async (req, res) => {
   }
 });
 
-// -------------------- PROFILE PICTURE UPLOAD --------------------
+// ---------- SET PASSWORD (Google users) ----------
+router.post("/set-password", requireAuth, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password required" });
+    }
+
+    const user = await User.findById(req.session.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.password = newPassword; // hashed by pre-save hook
+    await user.save();
+
+    setSessionUser(req, user);
+
+    return res.json({ message: "Password created successfully" });
+  } catch (err) {
+    console.error("Set password error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- PROFILE PICTURE UPLOAD ----------
 router.post(
   "/profile-picture",
   requireAuth,
@@ -199,7 +224,7 @@ router.post(
   }
 );
 
-// -------------------- GOOGLE AUTH --------------------
+// ---------- GOOGLE AUTH ----------
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -216,15 +241,21 @@ router.get(
   }
 );
 
-// (optional) GITHUB AUTH if you decide to use it
-// router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
-// router.get(
-//   "/github/callback",
-//   passport.authenticate("github", { failureRedirect: "/login.html" }),
-//   (req, res) => {
-//     setSessionUser(req, req.user);
-//     res.redirect("/index.html");
-//   }
-// );
+// ---------- GITHUB AUTH (optional; safe to leave) ----------
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+router.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/login.html"
+  }),
+  (req, res) => {
+    setSessionUser(req, req.user);
+    res.redirect("/index.html");
+  }
+);
 
 module.exports = router;
