@@ -6,34 +6,40 @@ const UserSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
 
-    // Local password (optional if user signs up with OAuth only)
+    // Local password (optional for OAuth-only accounts)
     password: { type: String },
 
-    // Profile picture URL (for uploaded avatar or from OAuth)
+    // Profile picture (uploaded or OAuth)
     profilePic: { type: String, default: "" },
 
-    // 3rd–party IDs
+    // 3rd party login IDs
     googleId: { type: String },
     githubId: { type: String },
   },
   {
-    collection: "users"
+    collection: "users",
   }
 );
 
-// Hash password if changed
+// ------------------------------
+// HASH PASSWORD IF CHANGED
+// ------------------------------
 UserSchema.pre("save", async function (next) {
   try {
     if (!this.isModified("password") || !this.password) return next();
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+
     next();
   } catch (err) {
     next(err);
   }
 });
 
-// Compare password for local login
+// ------------------------------
+// COMPARE PASSWORD
+// ------------------------------
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   if (!this.password) return false; // OAuth-only account
   return bcrypt.compare(candidatePassword, this.password);
