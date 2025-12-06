@@ -449,3 +449,77 @@ footer {
     text-decoration: underline;
 }
 
+/* --- Account section layout fixes --- */
+
+.account-section {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px 60px;
+}
+
+/* make the account card the same centered width as the notes card */
+.account-section .notes-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* card styling */
+.account-card {
+  margin-top: 16px;
+  background: #15171f;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* user info row */
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.account-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* forms */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+}
+
+/* keep password forms stacked nicely */
+#passwordArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* bigger screens: put info on left, forms on right */
+@media (min-width: 900px) {
+  .account-card {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .account-info {
+    flex: 0 0 260px;
+  }
+
+  .account-form {
+    flex: 1;
+  }
+}
+
