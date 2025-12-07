@@ -244,7 +244,7 @@ router.get(
   }
 );
 
-// ---------- GITHUB AUTH (optional; safe to leave) ----------
+// ---------- GITHUB AUTH  ----------
 router.get(
   "/github",
   passport.authenticate("github", { scope: ["user:email"] })
