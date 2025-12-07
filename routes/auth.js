@@ -102,10 +102,13 @@ router.post("/login", async (req, res) => {
 
 // ---------- LOGOUT ----------
 router.get("/logout", (req, res) => {
-  req.logout?.(() => {});
-  req.session.destroy(() => {
-    res.json({ message: "Logged out" });
-  });
+  if (req.session) {
+    req.session.destroy(() => {
+      res.redirect("/login.html");
+    });
+  } else {
+    res.redirect("/login.html");
+  }
 });
 
 // ---------- LOGIN STATUS ----------
