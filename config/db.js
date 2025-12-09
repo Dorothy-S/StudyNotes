@@ -1,1 +1,1 @@
-module.exports = {"URI":"mongodb+srv://samridhkhanna_db_user:Sam9711997812@cluster0.to1iot7.mongodb.net/notes"}
+module.exports = {"URI":"mongodb+srv://travelplanner:123@travelplanner.nx6hnl7.mongodb.net/"}
